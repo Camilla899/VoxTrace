@@ -1,8 +1,14 @@
 # VoxTrace Studio
 
 **人声 / Bass → MIDI 工作站。** 一个 RX-10 风格的深色音频分析界面：人声与 Bass 两条独立转写工作流，频谱、神经音高、调性、可编辑钢琴卷帘，以及可即时切换的气声抑制。
+
+
 ##MacOS,linux需要自己编译
+
+
 爱来自大肥鱼
+
+
 
 已经打包好的免安装版本：
 
@@ -188,4 +194,4 @@ powershell -ExecutionPolicy Bypass -File build_exe.ps1
 
 ## 开源与许可
 
-本项目站在这些项目之上：**Spotify Basic Pitch**（Apache-2.0）、**RMVPE**（MIT）、**Librosa**（ISC）、**Mido**（MIT）和 **Qt for Python / PySide6**（LGPLv3）。完整许可见 [`THIRD_PARTY_NOTICES.md`](THIRD_PARTY_NOTICES.md) 与 `licenses/`。
+本项目站在这些项目之上：**Spotify Basic Pitch**（Apache-2.0）、**RMVPE**（MIT）、**Librosa**（ISC）、**Mido**（MIT）和 **Qt for Python / PySide6**（LGPLv3）。

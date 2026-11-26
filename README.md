@@ -213,4 +213,4 @@ powershell -ExecutionPolicy Bypass -File build_exe.ps1
 
 本项目站在这些项目之上：**Spotify Basic Pitch**（Apache-2.0）、**RMVPE**（MIT）、**Librosa**（ISC）、**Mido**（MIT）和 **Qt for Python / PySide6**（LGPLv3）。完整许可见 [`THIRD_PARTY_NOTICES.md`](THIRD_PARTY_NOTICES.md) 与 `licenses/`。
 
-示例之外的真实人声 `demo/navy_solo.oga` 为美国海军军乐队演奏/演唱的美国国歌，属于美国联邦政府公有领域作品。
+

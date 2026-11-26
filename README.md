@@ -1,6 +1,6 @@
 # VoxTrace Studio
 
-**人声 / Bass → MIDI 工作站。** 一个 RX-10 风格的深色音频分析界面：人声与 Bass 两条独立转写工作流，频谱、神经音高、调性、可编辑钢琴卷帘，以及可即时切换的气声抑制。
+**人声 / Bass → MIDI 工作站。** 人声与 Bass 两条独立转写工作流，频谱、神经音高、调性、可编辑钢琴卷帘，以及可即时切换的气声抑制。
 
 ![VoxTrace Studio · 人声模式](docs/screenshot.png)
 

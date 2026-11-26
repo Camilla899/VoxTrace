@@ -1,14 +1,12 @@
 # VoxTrace Studio
 
-**人声 / Bass → MIDI分析器。** ：人声与 Bass 两条独立转写工作流，频谱、神经音高、调性、可编辑钢琴卷帘，以及可即时切换的气声抑制。
+**人声 / Bass → MIDI 工作站。** 一个 RX-10 风格的深色音频分析界面：人声与 Bass 两条独立转写工作流，频谱、神经音高、调性、可编辑钢琴卷帘，以及可即时切换的气声抑制。
 
+![VoxTrace Studio · 人声模式](docs/screenshot.png)
 
-##MacOS,linux需要自己编译
+![VoxTrace Studio · Bass 模式](docs/screenshot_bass.png)
 
-
-爱来自大肥鱼
-
-
+## Windows EXE（便携版）
 
 已经打包好的免安装版本：
 
@@ -50,13 +48,16 @@ setup_env.bat
 run.bat
 ```
 
-需要 Python 3.11–3.13（64 位）。`requirements.txt` 会安装 PySide6、Librosa、ONNX Runtime、RMVPE 等依赖。非 WAV/FLAC 格式（MP3、M4A、OGG、AAC）需要系统里有 `ffmpeg`；WAV/FLAC 可直接读取。
+需要 Python 3.11–3.13（64 位）。`requirements.txt` 会安装 PySide6、Librosa、ONNX Runtime、Mido 等依赖。非 WAV/FLAC 格式（MP3、M4A、OGG、AAC）需要系统里有 `ffmpeg`；WAV/FLAC 可直接读取。
+
+> 源码仓库不包含两个 ONNX 权重文件（`rmvpe.onnx` 约 345 MB，超过 GitHub 网页上传限制）。请把 `basic_pitch.onnx` 和 `rmvpe.onnx` 放入 `models/`，来源、校验值和 Git LFS 方法见 [`models/README.md`](models/README.md)。便携版 EXE 已内置这两个文件。
 
 ## 核心功能
 
 - **双工作流（完全独立）**：左侧「主工作区」有两个独立入口——**人声转 MIDI** 与 **Bass 转 MIDI**。每个工作区有自己的音频文件、波形/频谱、分析结果、音符、撤销历史、BPM、缩放视口和播放头；来回切换只恢复对应工作区，**不会把当前文件复制到另一边，也不会分析同一个文件**。
 - **人声转 MIDI**：Basic Pitch 神经网络负责起音、音长与复音候选；RMVPE 神经音高负责基频与半音级校验；自动清理泛音、重复八度和单声部重叠。橙色音符。
 - **Bass 转 MIDI**：专门的低频单音工作流。Basic Pitch 提取贝斯音符，4096 点窗口的 pYIN 低频跟踪校验实际基频并修正八度，强制单音线条，默认音域 E1–G3；蓝色音符，BPM/调性照常检测。适合 UVR / Demucs 分离出的 Bass 轨。
+- **RX-10 风格工作区**：深色石墨 + 琥珀色视觉；Bass 模式使用蓝色音符与「BASS AI」状态，和上方人声结果一眼区分。
 - **人声频谱**：波形 + 对数频率频谱图同屏，频谱图带 40 Hz–11 kHz 标尺、音高轨迹叠加、气声区域标记、选区与播放头。
 - **调性检测**：Krumhansl–Schmuckler 调性轮廓 + 人声音高直方图 + 频谱 chroma；显示大小调、升降号、Camelot 轮盘、置信度与 BPM。
 - **钢琴卷帘**：音符块、左侧钢琴键盘、音阶高亮、节拍/小节网格、连续音高曲线；可双击添加、拖动移调、拖边改长度、右键或 Delete 删除、Ctrl+Z 撤销。**鼠标滚轮上下滑动音域，PageUp/PageDown 一次一个八度，Ctrl+Shift+滚轮缩放音域**；`Ctrl+0` 同时适配时间与音域。顶部 **BPM 可直接修正**，网格、节拍与 MIDI 导出速度同步更新。
@@ -149,8 +150,11 @@ run.bat
 
 ```text
 VoxTrace/
-├─ app.py                       启动器与日志
+├─ app.py                       启动器、日志、--self-test
 ├─ run.bat / setup_env.bat      一键运行 / 安装
+├─ README.md                    使用说明
+├─ CHANGELOG.md                 版本变更记录
+├─ THIRD_PARTY_NOTICES.md       第三方归属
 ├─ models/
 │  ├─ basic_pitch.onnx          Basic Pitch 音符模型（Apache-2.0）
 │  └─ rmvpe.onnx                RMVPE 人声音高模型（MIT）
@@ -160,21 +164,34 @@ VoxTrace/
 │  ├─ engine.py                 多核推理、人声/Bass 转写、调性、BPM
 │  ├─ midi_io.py                参考 Bass MIDI 读取与轨道解析
 │  ├─ notes.py                  音符/调性/呼吸区/MIDI 写入
+│  ├─ rmvpe.py                  vendored RMVPE ONNX 推理
 │  └─ ui/                       PySide6 界面、钢琴卷帘、Bass 模式与参考泳道
 ├─ demo/                        合成人声/Bass 示例 + 公有领域真实人声
 ├─ tests/                       unittest 单元与集成测试
-├─ scripts/                     示例生成与 UI 截图
+├─ scripts/                     示例生成、截图、Qt 功能冒烟测试
+├─ docs/                       截图、开发指南
 ├─ build_exe.ps1                重新打包 Windows 便携版
 └─ dist/VoxTrace/               已打包的 EXE 与运行时
 ```
 
-运行测试：
+运行测试与功能冒烟：
 
 ```text
 python tests/run_tests.py
+python scripts/functional_smoke.py
 ```
 
-重新打包 EXE：
+重新生成文档截图：
+
+```text
+python scripts/capture_screenshots.py
+```
+
+开发说明见 [`docs/DEVELOPMENT.md`](docs/DEVELOPMENT.md)，版本记录见
+[`CHANGELOG.md`](CHANGELOG.md)，开发辅助脚本见
+[`scripts/README.md`](scripts/README.md)。
+
+重新打包 EXE（需要先安装 `requirements-dev.txt`，其中包含 PyInstaller）：
 
 ```powershell
 powershell -ExecutionPolicy Bypass -File build_exe.ps1
@@ -194,4 +211,6 @@ powershell -ExecutionPolicy Bypass -File build_exe.ps1
 
 ## 开源与许可
 
-本项目站在这些项目之上：**Spotify Basic Pitch**（Apache-2.0）、**RMVPE**（MIT）、**Librosa**（ISC）、**Mido**（MIT）和 **Qt for Python / PySide6**（LGPLv3）。
+本项目站在这些项目之上：**Spotify Basic Pitch**（Apache-2.0）、**RMVPE**（MIT）、**Librosa**（ISC）、**Mido**（MIT）和 **Qt for Python / PySide6**（LGPLv3）。完整许可见 [`THIRD_PARTY_NOTICES.md`](THIRD_PARTY_NOTICES.md) 与 `licenses/`。
+
+示例之外的真实人声 `demo/navy_solo.oga` 为美国海军军乐队演奏/演唱的美国国歌，属于美国联邦政府公有领域作品。
